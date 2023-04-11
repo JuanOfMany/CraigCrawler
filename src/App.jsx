@@ -19,7 +19,6 @@ Chart.register(LinearScale, PointElement, LineElement, Tooltip, Legend);
 export default function App() {
   const options = {
     maintainAspectRatio: true,
-    aspectRatio: 1,
     display: true,
     responsive: true,
     radius: 5,
@@ -80,13 +79,13 @@ export default function App() {
     <div className="App">
       <div
         style={{
-          width: "40vw",
+          width: "60vw",
           position: "relative",
           margin: "auto",
           padding: "1%",
         }}
       >
-        <Scatter options={options} data={data} />;
+        <Scatter options={options} data={data} />
       </div>
     </div>
   );
