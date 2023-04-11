@@ -18,6 +18,8 @@ Chart.register(LinearScale, PointElement, LineElement, Tooltip, Legend);
 
 export default function App() {
   const options = {
+    maintainAspectRatio: true,
+    aspectRatio: 1,
     display: true,
     responsive: true,
     radius: 5,
@@ -46,6 +48,22 @@ export default function App() {
         },
       },
     },
+    plugins: {
+      tooltip: {
+        displayColors: false,
+        titleAlign: "center",
+        bodyAlign: "center",
+        callbacks: {
+          title: function (TooltipItem, data) {
+            return "Year / Price";
+          },
+          label: function (TooltipItem) {
+            let coordinates = TooltipItem.parsed;
+            return `${coordinates.x}, $${coordinates.y}`;
+          },
+        },
+      },
+    },
   };
 
   const data = {
@@ -60,7 +78,16 @@ export default function App() {
 
   return (
     <div className="App">
-      <Scatter options={options} data={data} />;
+      <div
+        style={{
+          width: "40vw",
+          position: "relative",
+          margin: "auto",
+          padding: "1%",
+        }}
+      >
+        <Scatter options={options} data={data} />;
+      </div>
     </div>
   );
 }
