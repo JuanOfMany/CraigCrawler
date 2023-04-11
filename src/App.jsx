@@ -85,7 +85,7 @@ export default function App() {
           padding: "1%",
         }}
       >
-        <Scatter options={options} data={data} />
+        <Scatter style={{width: "100%"}} options={options} data={data} />
       </div>
     </div>
   );
