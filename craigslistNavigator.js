@@ -54,16 +54,26 @@ const puppeteer = require("puppeteer");
   };
 
   const extractYear = function (string) {
-    var m = /(^|\s)(\d{4})(\s|$)/.exec(string);
+    var m = /\d{4}/.exec(string);
     if (m) {
-      return m[2];
+      return m[0];
     } else {
-      return string;
+      return false;
     }
   };
 
   let completeArr = []
-  let titles = posts.map((post) => completeArr.push(extractYear(extractTitle(post)), extractPrice(post)));
+  let titles = posts.map((post) => {
+    let price = extractPrice(post);
+    let title = extractTitle(post);
+    let year = extractYear(title);
+    if (year) {
+      completeArr.push(year, price);
+    } else {
+      console.log(`Following post doesn't have a year: ${title}.`)
+    }
+  })
+
   console.log(completeArr)
 
 
