@@ -1,4 +1,4 @@
-import puppeteer from 'puppeteer';
+const puppeteer = require('puppeteer');
 
 (async () => {
   const browser = await puppeteer.launch();
@@ -68,7 +68,7 @@ import puppeteer from 'puppeteer';
     let title = extractTitle(post);
     let year = extractYear(title);
     if (year) {
-      completeArr.push(year, price);
+      completeArr.push({"x":Number(year), "y":Number(price.slice(1).replace(',',''))});
     } else {
       console.log(`Following post doesn't have a year: ${title}.`)
     }
