@@ -100,6 +100,7 @@ const MiataData = [
   { x: 2015, y: 15998 },
   { x: 2017, y: 23995 },
 ];
+
 export default MiataData.filter(
   (value, index, self) =>
     index === self.findIndex((t) => t.x === value.x && t.y === value.y)

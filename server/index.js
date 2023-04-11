@@ -1,8 +1,12 @@
 const express = require('express')
 const app = express()
 const port = 3000
+const scrape = require('./craigslistNavigator');
 
-app.get('/', (req, res) => {
+
+
+app.get('/scrape', (req, res) => {
+  console.log(scrape);
   res.send('Hello World!')
 })
 

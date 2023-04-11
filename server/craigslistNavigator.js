@@ -1,6 +1,6 @@
 const puppeteer = require('puppeteer');
 
-(async () => {
+async function scraper () {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
@@ -62,21 +62,23 @@ const puppeteer = require('puppeteer');
     }
   };
 
-  let completeArr = []
-  let titles = posts.map((post) => {
-    let price = extractPrice(post);
-    let title = extractTitle(post);
-    let year = extractYear(title);
-    if (year) {
-      completeArr.push({"x":Number(year), "y":Number(price.slice(1).replace(',',''))});
-    } else {
-      console.log(`Following post doesn't have a year: ${title}.`)
-    }
-  })
-
-  console.log(completeArr)
 
 
+  const scrape = function() {
+    let results = []
+    let titles = posts.map((post) => {
+      let price = extractPrice(post);
+      let title = extractTitle(post);
+      let year = extractYear(title);
+      if (year) {
+        results.push({"x":Number(year), "y":Number(price.slice(1).replace(',',''))});
+      } else {
+        console.log(`Following post doesn't have a year: ${title}.`)
+      }
+    })
+    console.log('Done scraping');
+    return results;
+  }
 
   const postTitles = await page.evaluate(() =>
     Array.from(
@@ -92,4 +94,10 @@ const puppeteer = require('puppeteer');
   );
 
   await browser.close();
-})();
+
+  return scrape(posts);
+}
+
+module.exports = {
+  "scraper": scraper
+}
