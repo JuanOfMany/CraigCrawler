@@ -72,11 +72,12 @@ async function scraper () {
       let year = extractYear(title);
       if (year) {
         results.push({"x":Number(year), "y":Number(price.slice(1).replace(',',''))});
-      } else {
-        console.log(`Following post doesn't have a year: ${title}.`)
+      // } else {
+        // console.log(`Following post doesn't have a year: ${title}.`)
       }
     })
     console.log('Done scraping');
+    console.log(results)
     return results;
   }
 
