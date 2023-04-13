@@ -1,37 +1,38 @@
-const { Client } = require("pg");
+const { Pool } = require("pg");
 const dotenv = require("dotenv");
 dotenv.config();
 
-const connectDb = async () => {
-  try {
-    const client = new Client({
-      user: process.env.PGUSER,
-      host: process.env.PGHOST,
-      database: process.env.PGDATABASE,
-      password: process.env.PGPASSWORD,
-      port: process.env.PGPORT,
-    });
-    await client.connect();
-    const res = await client.query(`
-    CREATE TABLE IF NOT EXISTS "Post Info" (
-        "id" BIGINT NOT NULL,
-        "location" VARCHAR(255) NOT NULL,
-        "car model" VARCHAR(255) NOT NULL,
-        "title" VARCHAR(255) NOT NULL,
-        "description" TEXT NOT NULL,
-        "year" INTEGER NOT NULL,
-        "price" INTEGER NOT NULL,
-        "link" VARCHAR(255) NOT NULL,
-        "color" VARCHAR(255) NOT NULL
-    );
-  `);
-// Add primary key ID if table doesn't exist.
-//    ALTER TABLE
-// "Post Info" ADD PRIMARY KEY("id");
-    console.log(res);
-    await client.end();
-  } catch (error) {
-    console.log(error);
-  }
-};
-connectDb();
+const pool = new Pool({
+  user: process.env.PGUSER,
+  host: process.env.PGHOST,
+  database: process.env.PGDATABASE,
+  password: process.env.PGPASSWORD,
+  port: process.env.PGPORT,
+});
+
+pool.on("error", (err, client) => {
+  console.error("Unexpected error on idle client", err); // your callback here
+  process.exit(-1);
+});
+
+const createTable = function () {
+  pool
+    .query(`
+      CREATE TABLE IF NOT EXISTS "post_info" (
+          "post_id" SERIAL NOT NULL,
+          "location" VARCHAR(255) NOT NULL,
+          "model" VARCHAR(255) NOT NULL,
+          "title" VARCHAR(255) NOT NULL,
+          "description" TEXT NOT NULL,
+          "year" INTEGER NOT NULL,
+          "price" INTEGER NOT NULL,
+          "link" VARCHAR(255) NOT NULL,
+          "color" VARCHAR(255) NOT NULL,
+          CONSTRAINT "pk_post_id" primary key ("post_id")
+      );
+    `)
+    .then((res) => console.log(res));
+  console.log(`Connected to ${process.env.PGDATABASE} database.`);
+}();
+
+module.exports = { pool };
