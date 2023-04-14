@@ -1,8 +1,7 @@
 const { pool } = require("./db");
 
 async function insertData() {
-  try {
-    const res = await pool.query(
+    return await pool.query(
       `INSERT INTO post_info (
         location,
         model,
@@ -21,12 +20,24 @@ async function insertData() {
         6000,
         'www.juanpinol.com',
         'yellow'
-      );`,
+      );`
     );
     console.log(`Added a Miata to the database`);
-  } catch (error) {
-    console.error(error);
   }
+
+
+async function getData(req, res) {
+  await pool
+    .query(
+      `SELECT * FROM post_info WHERE location='miami';`,
+      ((err, results) => {
+        if (err) {
+          console.log(err);
+          res.status(500).send(err);
+        }
+        res.status(200).send(results.rows);
+      })
+    )
 }
 
-insertData()
+module.exports = { insertData, getData }

@@ -1,14 +1,19 @@
-const express = require('express')
-const app = express()
-const port = 3000
+const express = require('express');
+const path = require('path');
+
 const {scraper} = require('./craigslistNavigator');
 
+const port = 3000
+const app = express();
 
 
-app.get('/scrape', (req, res) => {
-  scraper()
-  .then((results) => res.send(results));
-})
+const { getData, insertData } = require('./controllers.js');
+
+app.use(express.static(path.join(__dirname, '../dist')));
+
+app.get('/postinfo', getData)
+
+app.post('/postinfo', insertData)
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)

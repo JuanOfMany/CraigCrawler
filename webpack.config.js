@@ -3,8 +3,8 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 const config = {
   name: 'Craig Crawler',
-  mode: 'development',
-  //mode: 'production',
+  // mode: 'development',
+  mode: 'production',
   entry: path.join(__dirname, "src", "index.js"),
   output: {
     path: path.resolve(__dirname, "dist"),
@@ -19,7 +19,7 @@ const config = {
   module: {
     rules: [
       {
-        test: /\.?jsx?$/,
+        test: /\.(js)x?$/,
         exclude: /node_modules/,
         use: {
           loader: "babel-loader",
@@ -35,6 +35,9 @@ const config = {
       template: path.join(__dirname, "src", "index.html"),
     }),
   ],
+  resolve: {
+    extensions: ['', '.js', '.jsx'],
+  },
 };
 
 module.exports = config;

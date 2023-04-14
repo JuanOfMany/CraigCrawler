@@ -33,6 +33,6 @@ const createTable = function () {
     `)
     .then((res) => console.log(res));
   console.log(`Connected to ${process.env.PGDATABASE} database.`);
-}();
+};
 
 module.exports = { pool };
