@@ -1,8 +1,8 @@
 const { pool } = require("./db");
 
-async function insertData() {
-    return await pool.query(
-      `INSERT INTO post_info (
+async function insertData(req, res) {
+  await pool.query(
+    `INSERT INTO post_info (
         location,
         model,
         title,
@@ -12,32 +12,36 @@ async function insertData() {
         link,
         color
       ) VALUES (
-        'miami',
-        'miata',
-        'Example Post',
-        'lorem ipsum sum',
-        1992,
-        6000,
-        'www.juanpinol.com',
-        'yellow'
-      );`
-    );
-    console.log(`Added a Miata to the database`);
-  }
-
-
-async function getData(req, res) {
-  await pool
-    .query(
-      `SELECT * FROM post_info WHERE location='miami';`,
-      ((err, results) => {
-        if (err) {
-          console.log(err);
-          res.status(500).send(err);
-        }
-        res.status(200).send(results.rows);
-      })
-    )
+        '${req.body.location}',
+        '${req.body.model}',
+        '${req.body.title}',
+        '${req.body.description}',
+        ${req.body.year},
+        ${req.body.price},
+        '${req.body.link}',
+        '${req.body.color}'
+      );`,
+    (err, results) => {
+      if (err) {
+        console.log(err);
+        res.status(500).send(err);
+      }
+      res.status(201).send("Added Miata to the Database");
+    }
+  );
 }
 
-module.exports = { insertData, getData }
+async function getData(req, res) {
+  await pool.query(
+    `SELECT * FROM post_info WHERE location='miami';`,
+    (err, results) => {
+      if (err) {
+        console.log(err);
+        res.status(500).send(err);
+      }
+      res.status(200).send(results.rows);
+    }
+  );
+}
+
+module.exports = { insertData, getData };
