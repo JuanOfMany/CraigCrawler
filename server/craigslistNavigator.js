@@ -1,6 +1,43 @@
-const puppeteer = require('puppeteer');
+const puppeteer = require("puppeteer");
 
-async function scraper () {
+//REGEX functions
+const extractPrice = function (string) {
+  var m = /(?<=class="priceinfo">)(.*?)(?=<)/.exec(string);
+  if (m) {
+    return m[1];
+  } else {
+    return "No price was found for some reason.";
+  }
+};
+
+const extractTitle = function (string) {
+  var regex = /(?<=class="titlestring")(.*?)(?<=div)/.exec(string);
+  if (regex) {
+    return /(?<=html"\>)(.*)(?=<\/)/.exec(regex[1])[1];
+  } else {
+    return "No title was found for some reason.";
+  }
+};
+
+const extractYear = function (string) {
+  var m = /\d{4}/.exec(string);
+  if (m) {
+    return m[0];
+  } else {
+    return false;
+  }
+};
+
+const extractURL = function (string) {
+  var regex = /(?<=href=)(.*?)(?=>)/.exec(string);
+  if (regex) {
+    return regex[0];
+  } else {
+    console.log("No URL was found for some reason.");
+  }
+};
+
+async function scraper() {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
@@ -33,72 +70,60 @@ async function scraper () {
     )
   );
 
-  const extractPrice = function (string) {
-    var m = /(?<=class="priceinfo">)(.*?)(?=<)/.exec(string);
-    if (m) {
-      return m[1];
-    } else {
-      return "price not found";
-    }
-  };
+  const scrape = function () {
+    let results = [];
+    let yearXPrice = [];
 
-  const extractTitle = function (string) {
-    var regex = /(?<=class="titlestring")(.*?)(?=<)/.exec(string);
-
-    //  var regex = /(?<=html>")(.*?)/.exec(string);
-    if (regex) {
-      return /(?<=html"\>)(.*)/.exec(regex[1])[1];
-    } else {
-      return "title not found";
-    }
-  };
-
-  const extractYear = function (string) {
-    var m = /\d{4}/.exec(string);
-    if (m) {
-      return m[0];
-    } else {
-      return false;
-    }
-  };
-
-
-
-  const scrape = function() {
-    let results = []
-    let titles = posts.map((post) => {
+    posts.map((post, index) => {
       let price = extractPrice(post);
       let title = extractTitle(post);
       let year = extractYear(title);
+      let url = extractURL(post);
+
+      //populates array for year/price plotting with chartjs
+      //should move this logic into the front end later maybe?
       if (year) {
-        results.push({"x":Number(year), "y":Number(price.slice(1).replace(',',''))});
-      // } else {
-        // console.log(`Following post doesn't have a year: ${title}.`)
+        yearXPrice.push({
+          x: Number(year),
+          y: Number(price.slice(1).replace(",", "")),
+        });
       }
-    })
-    console.log('Done scraping');
-    console.log(results)
-    return results;
-  }
 
-  const postTitles = await page.evaluate(() =>
-    Array.from(
-      document.querySelectorAll('[class*="titlestring"]'),
-      (element) => element.textContent
-    )
-  );
+      //populates array with all data only if title includes miata
+      if (title.toLowerCase().includes("miata")) {
+        results.push({ year, price, title, url });
+      }
+    });
 
-  const postPrices = await page.evaluate(() =>
-    Array.from(document.querySelectorAll('[class*="priceinfo"]'), (element) => {
-      return element.textContent;
-    })
+    // console.log(results);
+    return yearXPrice;
+  };
+
+  let uniqArr = scrape(posts).filter(
+    (value, index, self) =>
+      index === self.findIndex((t) => t.x === value.x && t.y === value.y)
   );
 
   await browser.close();
-
-  return scrape(posts);
+  return uniqArr;
 }
+
+scraper();
 
 module.exports = {
-  "scraper": scraper
-}
+  scraper: scraper,
+};
+
+// OLD CODE FOR GRABBING TEXT CONTENT ASYNCHRONOUSLY WITH PUPPETEER BELOW
+// const postTitles = await page.evaluate(() =>
+//   Array.from(
+//     document.querySelectorAll('[class*="titlestring"]'),
+//     (element) => element.textContent
+//   )
+// );
+
+// const postPrices = await page.evaluate(() =>
+//   Array.from(document.querySelectorAll('[class*="priceinfo"]'), (element) => {
+//     return element.textContent;
+//   })
+// );

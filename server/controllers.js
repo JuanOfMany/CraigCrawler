@@ -1,6 +1,6 @@
 const { pool } = require("./db");
 
-async function insertData(req, res) {
+async function insertDataFromReq(req, res) {
   await pool.query(
     `INSERT INTO post_info (
         location,
@@ -44,4 +44,34 @@ async function getData(req, res) {
   );
 }
 
-module.exports = { insertData, getData };
+async function insertScrapedData(dataPoint) {
+  await pool.query(
+    `INSERT INTO post_info (
+        location,
+        model,
+        title,
+        description,
+        year,
+        price,
+        link,
+        color
+      ) VALUES (
+        '${dataPoint.location}',
+        '${dataPoint.model}',
+        '${dataPoint.title}',
+        '${dataPoint.description}',
+        ${dataPoint.year},
+        ${dataPoint.price},
+        '${dataPoint.link}',
+        '${dataPoint.color}'
+      );`,
+    (err, results) => {
+      if (err) {
+        console.log(err);
+      }
+      console.log("Added Miata to the Database");
+    }
+  );
+}
+
+module.exports = { insertDataFromReq, getData, insertScrapedData };
