@@ -74,4 +74,17 @@ async function insertScrapedData(dataPoint) {
   );
 }
 
+// let sampleData = {
+//   "location": "miami",
+//   "model": "miata",
+//   "title": "testing scrape data input",
+//   "description": "this should work",
+//   "year": 1992,
+//   "price": 6000,
+//   "link": "www.juanpinol.com",
+//   "color": "yellow"
+// }
+//
+// insertScrapedData(sampleData);
+
 module.exports = { insertDataFromReq, getData, insertScrapedData };

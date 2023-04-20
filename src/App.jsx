@@ -25,6 +25,13 @@ export default function App() {
     borderWidth: 1,
     hoverBorderWidth: 5,
     hoverRadius: 10,
+    onClick: function(e){
+      if (e.chart.$context.chart.tooltip.dataPoints){
+        var selectedIndex = e.chart.$context.chart.tooltip.dataPoints[0].dataIndex;
+        window.open(MiataData[selectedIndex].url.replace(/['"]+/g, ''))
+        e.chart.$context.chart.tooltip.dataPoints = null;
+      }
+    },
     scales: {
       x: {
         type: "linear",
@@ -56,10 +63,10 @@ export default function App() {
           title: function (TooltipItem, data) {
             return "Year / Price";
           },
-          label: function (TooltipItem) {
-            let coordinates = TooltipItem.parsed;
-            return `${coordinates.x}, $${coordinates.y}`;
-          },
+          label: function(ctx) {
+              let label = " (" + ctx.parsed.x + ", " + ctx.parsed.y + ")";
+              return label;
+            },
         },
       },
     },
@@ -69,6 +76,7 @@ export default function App() {
     datasets: [
       {
         label: "Miata Prices by Year",
+        labels: Array.from(MiataData, (dataPoint) => dataPoint.url),
         data: MiataData,
         backgroundColor: "rgba(255, 99, 132, 1)",
       },

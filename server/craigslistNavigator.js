@@ -54,13 +54,6 @@ async function scraper() {
   //needs to wait for page to load enough to have selectors on DOM lol.
   await page.waitForSelector(`[class*="titlestring"]`);
 
-  //get text
-  // const text = await (await element.getProperty("textContent")).jsonValue();
-
-  const post = await page.$eval('[class*="gallery-card"]', (element) => {
-    return element.innerHTML;
-  });
-
   const posts = await page.evaluate(() =>
     Array.from(
       document.querySelectorAll('[class*="gallery-card"]'),
@@ -70,11 +63,11 @@ async function scraper() {
     )
   );
 
-  const scrape = function () {
+  const scrape = function (array) {
     let results = [];
     let yearXPrice = [];
 
-    posts.map((post, index) => {
+    array.map((post) => {
       let price = extractPrice(post);
       let title = extractTitle(post);
       let year = extractYear(title);
@@ -86,6 +79,7 @@ async function scraper() {
         yearXPrice.push({
           x: Number(year),
           y: Number(price.slice(1).replace(",", "")),
+          url: url,
         });
       }
 
@@ -95,17 +89,17 @@ async function scraper() {
       }
     });
 
-    // console.log(results);
+    console.log(yearXPrice);
     return yearXPrice;
   };
 
-  let uniqArr = scrape(posts).filter(
+  await browser.close();
+
+  //return array for coordinates filtering for doubles in price/year
+  return scrape(posts).filter(
     (value, index, self) =>
       index === self.findIndex((t) => t.x === value.x && t.y === value.y)
   );
-
-  await browser.close();
-  return uniqArr;
 }
 
 scraper();

@@ -1,9 +1,10 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+var mode = process.env.NODE_ENV || 'development';
 
 const config = {
   name: 'Craig Crawler',
-  // mode: 'development',
+  mode: mode,
   mode: 'production',
   entry: path.join(__dirname, "src", "index.js"),
   output: {
